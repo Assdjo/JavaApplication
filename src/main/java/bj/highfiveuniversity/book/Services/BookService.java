@@ -47,5 +47,9 @@ public class BookService {
     public Book getBookById(Long id) {
         return bookRepository.findById(id).get();
     }
+
+    public Book getBookByTitle(String title) {
+        return bookRepository.findByTitle(title).get();
+    }
     
 }
