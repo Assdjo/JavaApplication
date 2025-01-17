@@ -1,22 +1,12 @@
 package bj.highfiveuniversity.book.Controllers;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import bj.highfiveuniversity.book.models.Book;
+import bj.highfiveuniversity.book.DTO.BookDTO;
 import bj.highfiveuniversity.book.Services.BookService;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-
-
+import bj.highfiveuniversity.book.models.Book;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/books")
@@ -26,38 +16,43 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping("")
-    public Iterable<Book> getBooks() {
-        return bookService.getBooks();
-       
-    }
-
-    @PostMapping("")
-    public String addBook(@RequestBody Book book) {
-        bookService.addBook(book);
-        return "Livre ajouté avec succès !";
+    public ResponseEntity<Iterable<BookDTO>> getBooks() {
+        return new ResponseEntity<>(bookService.getBooks(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Book getBookById(@PathVariable Long id) {
-        return bookService.getBookById(id);
+    public ResponseEntity<BookDTO> getBookById(@PathVariable Long id) {
+        BookDTO book = bookService.getBookById(id);
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public Book searchBook(@RequestParam String title) {
-        return bookService.getBookByTitle(title);
+    public ResponseEntity<Book> getBookByTitle(@RequestParam String title) {
+        Book book = bookService.getBookByTitle(title);
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable Long id) {
-        bookService.deleteBook(id);
-        return "Livre avec l'id " + id + " supprimé avec succès !";
+    @PostMapping("")
+    public ResponseEntity<String> addBook(@RequestBody Book book) {
+        bookService.addBook(book);
+        return new ResponseEntity<>("Livre ajouté avec succès !", HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
+    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody Book book) {
         bookService.updateBook(id, book);
-        return bookService.getBookById(id);
+        return new ResponseEntity<>("Livre mis à jour avec succès !", HttpStatus.valueOf(204));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
+        return new ResponseEntity<>("Livre supprimé avec succès !", HttpStatus.valueOf(204));
+    }
+
+    @PostMapping("/{bookId}/authors/{authorId}")
+    public ResponseEntity<String> linkBookToAuthor(@PathVariable Long bookId, @PathVariable Long authorId) {
+        bookService.linkBookToAuthor(bookId, authorId);
+        return new ResponseEntity<>("Auteur lié au livre avec succès !", HttpStatus.OK);
     }
 }
-
-   

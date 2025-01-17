@@ -1,58 +1,68 @@
 package bj.highfiveuniversity.book.Controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import bj.highfiveuniversity.book.DTO.AuthorDTO;
+import bj.highfiveuniversity.book.Exceptions.ResourceNotFoundException;
 import bj.highfiveuniversity.book.Services.AuthorService;
 import bj.highfiveuniversity.book.models.Author;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/authors") 
+@RequestMapping("/authors")
 public class AuthController {
 
     @Autowired
     private AuthorService authorService;
 
     @GetMapping("")
-    public Iterable<Author> getAuthors() {
-        return authorService.getAuthors();
+    public ResponseEntity<Iterable<AuthorDTO>> getAuthors() {
+        return new ResponseEntity<>(authorService.getAuthors(), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")    
-    public Author getAuthorById(@PathVariable Long id) {
-        return authorService.getAuthorById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<AuthorDTO> getAuthorById(@PathVariable Long id) {
+        AuthorDTO author = authorService.getAuthorById(id);
+        if (author.getId() != null) {
+            return new ResponseEntity<>(author, HttpStatus.OK);
+        } else {
+            throw new ResourceNotFoundException("Auteur non trouvé avec l'id " + id);
+        }
     }
 
     @GetMapping("/search")
-    public Author searchAuthor(@RequestParam String nom) {
-        return authorService.getAuthorByName(nom);
+    public ResponseEntity<Author> searchAuthor(@RequestParam String nom) {
+        Optional<Author> author = authorService.getAuthorByName(nom);
+        if (author.isPresent()) {
+            return new ResponseEntity<>(author.get(), HttpStatus.OK);
+        } else {
+            throw new ResourceNotFoundException("Auteur non trouvé avec le nom " + nom);
+        }
     }
 
     @PostMapping("")
-    public String addAuthor(@RequestBody Author author) {
+    public ResponseEntity<String> addAuthor(@RequestBody Author author) {
         authorService.addAuthor(author);
-        return "Auteur ajouté avec succès !";
+        return new ResponseEntity<>("Auteur ajouté avec succès !", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteAuthor(@PathVariable Long id) {
+    public ResponseEntity<String> deleteAuthor(@PathVariable Long id) {
         authorService.deleteAuthor(id);
-        return "Auteur avec l'id " + id + " supprimé avec succès !";
+        return new ResponseEntity<>("Auteur avec l'id " + id + " supprimé avec succès !", HttpStatus.valueOf(204));
     }
 
     @PutMapping("/{id}")
-    public Author updateAuthor(@PathVariable Long id, @RequestBody Author author) {
+    public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable Long id, @RequestBody Author author) {
         authorService.updateAuthor(id, author);
-        return authorService.getAuthorById(id);
+        AuthorDTO updatedAuthor = authorService.getAuthorById(id);
+        if (updatedAuthor.getId() != null) {
+            return new ResponseEntity<>(updatedAuthor, HttpStatus.valueOf(204));
+        } else {
+            throw new ResourceNotFoundException("Auteur non trouvé avec l'id " + id);
+        }
     }
-
-
 }

@@ -3,6 +3,9 @@ package bj.highfiveuniversity.book.models;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +34,7 @@ public class Book {
         joinColumns = @JoinColumn(name = "book_id"), 
         inverseJoinColumns = @JoinColumn(name = "author_id")
     )
+    @JsonManagedReference
     private Set<Author> authors;
 
 @ManyToOne

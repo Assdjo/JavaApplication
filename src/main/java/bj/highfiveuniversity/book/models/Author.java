@@ -2,6 +2,8 @@ package bj.highfiveuniversity.book.models;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +24,8 @@ public class Author {
     private String nationalite;
 
     @ManyToMany(mappedBy = "authors")
+
+    @JsonBackReference
     private Set<Book> books;
 
     public Long getId() {
@@ -53,6 +57,14 @@ public class Author {
 
     public void setNationalite(String nationalite) {
         this.nationalite = nationalite;
+    }
+
+    public Set<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(Set<Book> books) {
+        this.books = books;
     }
 
 }
