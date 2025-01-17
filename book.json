@@ -1,0 +1,11 @@
+{
+  "title": "Titre du Livre",
+  "author": "Nom de l'Auteur",
+  "publicationYear": 2023,
+  "genre": "Genre du Livre",
+  "isbn": "123-4567890123",
+  "publisher": "Nom de l'Éditeur",
+  "pages": 350,
+  "language": "Français",
+  "published-at": "1824-10-04"
+}
