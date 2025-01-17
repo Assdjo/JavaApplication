@@ -43,8 +43,8 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public String searchBook(@RequestParam String title, @RequestParam String author) {
-        return "Résultat de la recherche : " + title + " de l'auteur " + author;
+    public Book searchBook(@RequestParam String title) {
+        return bookService.getBookByTitle(title);
     }
 
     @DeleteMapping("/{id}")
@@ -59,3 +59,5 @@ public class BookController {
         return bookService.getBookById(id);
     }
 }
+
+   
